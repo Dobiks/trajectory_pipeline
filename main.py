@@ -7,16 +7,23 @@ import networkx as nx
 import math
 from grid_tools import GridTools
 SIZE = 300
+def generate(G,airport, start_node, id):
 
-def generate(G,airport, start_node):
-
-
-
-    # waether_path = "heat_map/final_weather.npy"
-    # grid = np.load(waether_path)
+    DRAW = 0
+    weather_path = f"weather_matrices/{id}.npy"
     traj_path = f'airports/{airport}.npy'
-    grid = traj = np.load(traj_path)
-    # grid = grid + traj
+    #check if exists
+    if os.path.exists(weather_path):
+        weather = np.load(weather_path)
+        grid = np.load(traj_path)
+        grid = grid + weather
+        DRAW = 0
+        # print("drawing")
+    else:
+        grid = np.load(traj_path)
+        DRAW = 0
+
+
 
     for i in range(SIZE):
         for j in range(SIZE):
@@ -38,17 +45,19 @@ def generate(G,airport, start_node):
         else:
             return 'red'
 
-    # pos = {(x,y):(y,-x) for x,y in G.nodes()}
-    # nx.draw(G, pos=pos, 
-    #         node_color = [get_node_color(grid[x][y]) for x,y in G.nodes()],
-    #         node_size=20)
+    if DRAW:
+        pos = {(x,y):(y,-x) for x,y in G.nodes()}
+        nx.draw(G, pos=pos, 
+                node_color = [get_node_color(grid[x][y]) for x,y in G.nodes()],
+                node_size=20)
 
 
 
     end = (int(SIZE/2),int(SIZE/2))
     path = nx.astar_path(G, start_node, end, weight='cost')
 
-    # nx.draw_networkx_nodes(G, pos=pos, nodelist=path, node_color='blue', node_size=15)
+    if DRAW:
+        nx.draw_networkx_nodes(G, pos=pos, nodelist=path, node_color='blue', node_size=15)
     nodes_cords = []
     for i in path:
         nodes_cords.append(i)
@@ -56,7 +65,8 @@ def generate(G,airport, start_node):
     df = pd.DataFrame(nodes_cords)
     df.to_csv('nodes_cords.csv', index=False, header=False)
 
-    # plt.show()
+    if DRAW:
+        plt.show()
     return df
 
 
@@ -116,7 +126,7 @@ def main():
             continue
 
         start_node = tool.get_index_from_point(lat, lon)
-        output = generate(G,airport, start_node)
+        output = generate(G,airport, start_node, id)
         to_save = []
         ctr = 0
         for index, row in output.iterrows():
@@ -126,7 +136,7 @@ def main():
 
         df = pd.DataFrame(to_save, columns=['seq_number', 'lat', 'lon'])
 
-        df.to_csv(f'solution/{id}.csv', index=False)
+        df.to_csv(f'weather_aproach/solution/{id}.csv', index=False)
 
         print(f"Time taken: {time.time() - start_time}")
 
