@@ -130,15 +130,17 @@ def main():
         to_save = []
         ctr = 0
         for index, row in output.iterrows():
-            lat, lon = tool.get_cords_from_index(row[0], row[1])
+            lat, lon = tool.get_cords_from_index(row[1], row[0])
             to_save.append((ctr, lat, lon))
             ctr += 1
 
         df = pd.DataFrame(to_save, columns=['seq_number', 'lat', 'lon'])
 
         df.to_csv(f'weather_aproach/solution/{id}.csv', index=False)
+        # df.to_csv(f'{id}.csv', index=False)
 
         print(f"Time taken: {time.time() - start_time}")
+        
 
 if __name__ == '__main__':
     main()
