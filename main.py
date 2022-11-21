@@ -136,8 +136,8 @@ def main():
 
         df = pd.DataFrame(to_save, columns=['seq_number', 'lat', 'lon'])
 
-        df.to_csv(f'weather_aproach/solution/{id}.csv', index=False)
-        # df.to_csv(f'{id}.csv', index=False)
+        # df.to_csv(f'weather_aproach/solution/{id}.csv', index=False)
+        df.to_csv(f'{id}.csv', index=False)
 
         print(f"Time taken: {time.time() - start_time}")
         
